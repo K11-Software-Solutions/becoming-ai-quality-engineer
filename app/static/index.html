@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NimbusNotes Help Assistant</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; color: #1f2933; }
+    form { display: flex; gap: .5rem; }
+    input { flex: 1; padding: .6rem; font-size: 1rem; }
+    button { padding: .6rem 1rem; font-size: 1rem; cursor: pointer; }
+    #answer { margin-top: 1.5rem; padding: 1rem; background: #f3f4f6; border-radius: 6px; min-height: 2rem; white-space: pre-wrap; }
+    #meta { color: #52606d; font-size: .85rem; margin-top: .5rem; }
+    .error { color: #b42318; }
+  </style>
+</head>
+<body>
+  <h1>NimbusNotes Help Assistant</h1>
+  <p>Ask a question about NimbusNotes plans, billing, security or sync. Answers come only from the help documents.</p>
+  <form id="ask-form">
+    <input id="question" name="question" aria-label="Question" maxlength="500" required
+           placeholder="e.g. How long do I have to request a refund?" data-testid="question-input">
+    <button type="submit" data-testid="ask-button">Ask</button>
+  </form>
+  <div id="answer" role="status" aria-live="polite" data-testid="answer"></div>
+  <div id="meta" data-testid="meta"></div>
+  <script>
+    const form = document.getElementById("ask-form");
+    const answerEl = document.getElementById("answer");
+    const metaEl = document.getElementById("meta");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const question = document.getElementById("question").value;
+      answerEl.className = "";
+      answerEl.textContent = "Thinking...";
+      metaEl.textContent = "";
+      try {
+        const resp = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : resp.statusText);
+        answerEl.textContent = data.answer;
+        const sources = data.citations.length ? data.citations.join(", ") : "none";
+        metaEl.textContent = `Sources: ${sources} | model: ${data.model} | ${data.latency_ms} ms`;
+      } catch (err) {
+        answerEl.className = "error";
+        answerEl.textContent = "Something went wrong: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# AI evaluations. DeepEval is large; install it only when you get to article 04/05.
+# Promptfoo is a Node tool and runs through npx, so it is not listed here.
+-r requirements-dev.txt
+deepeval==4.3.3

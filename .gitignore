@@ -1,0 +1,32 @@
+# Secrets: never commit real keys
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Test and eval output
+reports/
+test-results/
+evals/results/
+traces/
+*.jsonl.tmp
+promptfoo-results.json
+.promptfoo/
+.deepeval/
+.deepeval-cache.json
+
+# Node
+node_modules/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

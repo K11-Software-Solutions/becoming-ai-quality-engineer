@@ -1,0 +1,17 @@
+[project]
+name = "becoming-ai-quality-engineer"
+version = "1.0.0"
+description = "Learning repo: skills, tools and a hands-on RAG project for QA engineers moving into AI quality engineering."
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests", "examples"]
+addopts = "-ra -m 'not ui'"
+markers = [
+    "ui: Playwright browser tests (run with: pytest -m ui)",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

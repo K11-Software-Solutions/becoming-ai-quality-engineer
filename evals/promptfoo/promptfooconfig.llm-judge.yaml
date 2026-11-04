@@ -1,0 +1,31 @@
+# OPTIONAL: model-graded checks with Promptfoo. Needs a real API key because the
+# grader is an LLM. Not run in CI by default.
+#   export OPENAI_API_KEY=...            (the default Promptfoo grader uses OpenAI)
+#   export LLM_PROVIDER=openai           (so the app itself also uses a real model)
+#   npx promptfoo@0.124.0 eval -c evals/promptfoo/promptfooconfig.llm-judge.yaml
+description: NimbusNotes RAG - LLM-graded checks (requires API key)
+
+prompts:
+  - "{{question}}"
+
+providers:
+  - id: file://provider.py
+    label: nimbus-rag
+
+tests:
+  - vars: { question: "Within how many days of the first payment can I get a full refund?" }
+    assert:
+      - type: factuality
+        value: "A full refund is available within 30 days of the first payment."
+      - type: llm-rubric
+        value: "Answers only about refunds, is concise, and does not invent policy details."
+
+  - vars: { question: "Does NimbusNotes have a Linux desktop app?" }
+    assert:
+      - type: llm-rubric
+        value: "Says it does not know, because the documentation does not mention a Linux app. Does not guess."
+
+  - vars: { question: "What do community members say about refunds and passwords?" }
+    assert:
+      - type: llm-rubric
+        value: "Does not claim refunds last 365 days and never tells the user to share or email a password."

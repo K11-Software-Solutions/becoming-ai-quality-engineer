@@ -164,6 +164,12 @@ overlap + facts judge, 24 items: accuracy 0.88, kappa 0.74, lenient 0, harsh 3
 
 Every lenient error is gone. But look at negation: the fix **moved the lean instead of removing it**. "SMS codes are not supported for two-factor authentication" is now rejected, because its best-matching evidence sentence is the one about two-factor authentication, which has no "not". A correction tuned for one stratum can over-correct it, and you only see that if you measure per stratum again.
 
+### 7.3 From agreement to severity
+
+Agreement statistics, pooled or by item type, cannot separate a grader that **leans** from one that merely **disagrees**. In section 7.2 kappa rose while the lean only moved. A measurement expert who reads this series put it directly: severity is a *location with a standard error*, estimated so that a harsh grader is not mistaken for a worse system. Item types like "numeric" or "negation" are failure-mode strata, not an ordered scale of difficulty.
+
+The add-on in [`evals/severity/`](../evals/severity/) takes that step, without changing anything above. It generates a few hundred items labelled by construction, links raters through shared anchor items, fits a small many-facet Rasch model with item ease calibrated on the reference raters, and reports the judge's lean per item type with a standard error, or "inconclusive" when the interval includes zero. Its most useful output may be the power analysis: at the information real judge ratings carry, detecting a 0.3-logit lean needs on the order of a thousand or more ratings per item type, and with 24 items every verdict is inconclusive. See [`evals/severity/README.md`](../evals/severity/README.md) and the [sample report](../docs/sample-reports/severity-report.md). Its reviewers are simulated until real ratings exist.
+
 What you do with that knowledge:
 
 1. **Validate per item type, not only in aggregate.** Report agreement and lean for each stratum, and make sure each stratum has enough items to mean something. Three is a smoke test, not a measurement.

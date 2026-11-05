@@ -64,6 +64,10 @@ jobs:
         run: cat evals/results/report.md >> "$GITHUB_STEP_SUMMARY"
       - name: Validate the evaluator (judge vs human labels)
         run: python -m evals.judge.judge_agreement --min-kappa 0.5
+      - name: Grader severity report (informational, simulated reviewers)
+        run: |
+          python -m evals.severity.run_severity > /dev/null
+          cat evals/results/severity_report.md >> "$GITHUB_STEP_SUMMARY"
       - name: DeepEval suite
         run: pytest evals/deepeval -v
       - name: Gate sanity check (a hallucinating model MUST fail the gate)

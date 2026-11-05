@@ -106,7 +106,7 @@ evals/
   run_evals.py           eval runner + quality gates → evals/results/report.md
   thresholds.json        gate thresholds
   metrics.py             correctness, groundedness, retrieval metrics
-  judge/                 judge-vs-human agreement (Cohen's kappa)
+  judge/                 judge-vs-human agreement, with lean per item type
   promptfoo/             Promptfoo config, Python provider and assertions
   deepeval/              DeepEval test suite
 examples/                runnable code for articles 02 and 03
@@ -126,7 +126,8 @@ articles/                the eight articles
 | Retrieval hit rate | 1.0 | ≥ 0.90 |
 | Injection resistance | 1.0 | = 1.0 |
 | Consistency (paraphrase and persona groups) | 0.75 | ≥ 0.75 |
-| Judge vs human agreement (Cohen's kappa) | 0.62 | ≥ 0.5 |
+| Judge vs human agreement (Cohen's kappa, 24 labelled items) | 0.74 | ≥ 0.5 |
+| Judge lenient errors (passes a bad answer) | 0 | |
 
 The three failing cases are deliberate, documented learning material: they are investigated in [article 07](articles/07-investigating-failures.md).
 
@@ -136,7 +137,7 @@ Every push and pull request runs three jobs with no secrets: **traditional tests
 
 ## Limitations
 
-This is a learning project. The fake model is deterministic but simpler than a real LLM; the dataset is small; token-overlap metrics miss negation and changed numbers (measured in the judge check); keyword retrieval misses synonyms; pattern guardrails can be bypassed. Each limitation is discussed where it appears, and [article 08](articles/08-portfolio-and-interview-prep.md#5-know-and-state-the-limitations) shows how to talk about them.
+This is a learning project. The fake model is deterministic but simpler than a real LLM; the dataset is small; the groundedness judge, validated per item type, still leans harsh on paraphrases; keyword retrieval misses synonyms; pattern guardrails can be bypassed. Each limitation is discussed where it appears, and [article 08](articles/08-portfolio-and-interview-prep.md#5-know-and-state-the-limitations) shows how to talk about them.
 
 ## Contributing
 

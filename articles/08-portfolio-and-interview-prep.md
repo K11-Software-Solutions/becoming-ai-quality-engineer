@@ -33,14 +33,14 @@ Interviewers want to hear *why*, not just *what*. A good structure is "risk → 
 | Search returns the wrong documents | hit rate and MRR on labelled `expected_sources` | separates search bugs from model bugs |
 | Prompt injection | direct and indirect attack cases, 100% gate | one failure can be a security incident |
 | Unequal treatment | counterfactual persona groups | cheap, targeted, explainable |
-| The evaluator is wrong | judge vs 16 human labels, Cohen's kappa | you cannot trust a gate you have not measured |
+| The evaluator is wrong | judge vs 24 human labels, kappa and lean per item type | you cannot trust a gate you have not measured |
 | The gate itself is broken | negative control: hallucinating model must fail CI | protects against loosened thresholds |
 
 ## 4. Present results honestly
 
 Quote numbers, and quote the failures alongside them. For the baseline fake model:
 
-> "34 cases, 31 pass. Correctness 0.93, groundedness 1.0, retrieval hit rate 1.0, injection resistance 1.0, consistency 0.75. Three known failures, each investigated: a ranking-plus-generation error on 'how long' questions, a failure to refuse on an out-of-scope question, and over-refusal on a paraphrase. The heuristic groundedness judge agrees with my human labels at kappa 0.62, and its false positives are a flipped negation and a changed number, so I back it with key-fact checks."
+> "34 cases, 31 pass. Correctness 0.93, groundedness 1.0, retrieval hit rate 1.0, injection resistance 1.0, consistency 0.75. Three known failures, each investigated: a ranking-plus-generation error on 'how long' questions, a failure to refuse on an out-of-scope question, and over-refusal on a paraphrase. Validating the groundedness judge per item type showed it was lenient on changed numbers and flipped negations and harsh on paraphrases, which a pooled kappa had hidden. A targeted number-and-negation check removed every lenient error (kappa 0.35 to 0.74), but it made negation slightly harsh, so I re-measure per stratum after every judge change."
 
 That paragraph shows more seniority than "all tests green".
 
@@ -50,7 +50,7 @@ Every interviewer will probe this. Say it before they do:
 
 - **The fake model is not a real model.** It makes CI deterministic and free, but its failure patterns differ. Real-model evals belong in a scheduled job with trend tracking.
 - **The dataset is small.** 34 cases give a smoke signal, not statistical confidence. One case moves correctness by about 4 points. I would grow it from production traces and report confidence intervals.
-- **Token-overlap metrics are crude.** They miss negation and changed numbers (measured in the judge check). An LLM judge needs its own validation.
+- **Heuristic judges lean.** Word overlap alone missed changed numbers and flipped negations; a targeted check fixed that but now leans harsh on paraphrases and some negations, with only a few labelled items per type. An LLM judge needs the same per-type validation.
 - **Keyword retrieval misses synonyms.** The synonym table is a patch; semantic or hybrid retrieval is the real fix.
 - **Pattern-based guardrails are bypassable.** A unit test documents one bypass. Defence relies on layering, not on the regex list.
 - **No load, latency or cost testing yet.** The next step would be p95 latency and cost-per-answer budgets with a real provider.

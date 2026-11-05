@@ -41,15 +41,42 @@ def sentence_support(sentence: str, contexts: list[str]) -> float:
     return best
 
 
-def groundedness(answer: str, contexts: list[str], threshold: float = 0.8) -> tuple[float, list[str]]:
+_NUMBER = re.compile(r"\d+(?:\.\d+)?")
+_NEGATION = re.compile(r"\b(not|no|never|cannot|can't|isn't|aren't|doesn't|don't|won't)\b", re.IGNORECASE)
+
+
+def facts_consistent(sentence: str, contexts: list[str]) -> bool:
+    """Targeted check for the item types where word overlap is too lenient.
+
+    Stratified judge validation (evals/judge) showed the overlap check passing
+    changed numbers and flipped negations, because they change one word and
+    keep the rest. So: every number in the sentence must appear in the context,
+    and the sentence must agree on negation with its best-matching context sentence.
+    """
+    ctx_numbers = {n for c in contexts for n in _NUMBER.findall(c)}
+    if any(n not in ctx_numbers for n in _NUMBER.findall(sentence)):
+        return False
+    ctx_sentences = [s for c in contexts for s in split_sentences(c)]
+    if not ctx_sentences:
+        return True
+    words = set(tokenize(sentence))
+    best = max(ctx_sentences, key=lambda s: len(words & set(tokenize(s))))
+    return bool(_NEGATION.search(sentence)) == bool(_NEGATION.search(best))
+
+
+def groundedness(answer: str, contexts: list[str], threshold: float = 0.8,
+                 check_facts: bool = True) -> tuple[float, list[str]]:
     """Fraction of answer sentences supported by the retrieved context.
 
+    A sentence is supported when enough of its words appear in one context and,
+    with ``check_facts`` (the default), its numbers and negations match too.
     Returns ``(score, unsupported_sentences)``. A refusal is trivially grounded.
     """
     sentences = split_sentences(strip_citations(answer))
     if not sentences:
         return 1.0, []
-    unsupported = [s for s in sentences if sentence_support(s, contexts) < threshold]
+    unsupported = [s for s in sentences if sentence_support(s, contexts) < threshold
+                   or (check_facts and not facts_consistent(s, contexts))]
     return 1 - len(unsupported) / len(sentences), unsupported
 
 

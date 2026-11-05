@@ -30,7 +30,14 @@ Reply with exactly one word: GROUNDED or NOT_GROUNDED."""
 
 
 def heuristic_judge(context: str, answer: str) -> str:
+    """Word overlap plus the number/negation check (the judge used by the eval gate)."""
     score, _ = metrics.groundedness(answer, [context])
+    return "grounded" if score == 1.0 else "not_grounded"
+
+
+def overlap_judge(context: str, answer: str) -> str:
+    """Word overlap only: the original judge, kept for comparison."""
+    score, _ = metrics.groundedness(answer, [context], check_facts=False)
     return "grounded" if score == 1.0 else "not_grounded"
 
 
@@ -56,13 +63,35 @@ def cohen_kappa(a: list[str], b: list[str]) -> float:
     return 1.0 if expected == 1 else (observed - expected) / (1 - expected)
 
 
+def stratified(rows: list[dict], predicted: list[str]) -> list[dict]:
+    """Agreement and lean per item type.
+
+    A single pooled kappa can hide a judge that is lenient on one kind of item
+    and harsh on another: the errors cancel out in the average. Per stratum:
+      lenient = judge said grounded, human said not   (false pass: the dangerous direction)
+      harsh   = judge said not grounded, human said grounded   (false fail)
+      lean    = (lenient - harsh) / n   >0 softer than the human, <0 harsher
+    """
+    groups: dict[str, list[tuple[str, str]]] = {}
+    for r, p in zip(rows, predicted):
+        groups.setdefault(r.get("stratum", "unlabelled"), []).append((r["human"], p))
+    out = []
+    for name, pairs in sorted(groups.items()):
+        n = len(pairs)
+        lenient = sum(h == "not_grounded" and p == "grounded" for h, p in pairs)
+        harsh = sum(h == "grounded" and p == "not_grounded" for h, p in pairs)
+        out.append({"stratum": name, "n": n, "agreement": round(sum(h == p for h, p in pairs) / n, 2),
+                    "lenient": lenient, "harsh": harsh, "lean": round((lenient - harsh) / n, 2)})
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--judge", choices=["heuristic", "llm"], default="heuristic")
+    parser.add_argument("--judge", choices=["heuristic", "overlap", "llm"], default="heuristic")
     parser.add_argument("--min-kappa", type=float, default=0.5)
     args = parser.parse_args(argv)
 
-    judge = heuristic_judge if args.judge == "heuristic" else make_llm_judge()
+    judge = {"heuristic": heuristic_judge, "overlap": overlap_judge}.get(args.judge) or make_llm_judge()
     rows = [json.loads(line) for line in LABELS.read_text(encoding="utf-8").splitlines() if line.strip()]
     human = [r["human"] for r in rows]
     predicted = [judge(r["context"], r["answer"]) for r in rows]
@@ -83,6 +112,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {r['id']}: human={r['human']} judge={p}\n      answer: {r['answer']}\n      why: {r['why']}")
     if fp:
         print("\nFalse positives are the dangerous ones: the judge passed an answer a human rejected.")
+
+    strata = stratified(rows, predicted)
+    print("\nBy item type (lean > 0: softer than the human labeller; < 0: harsher):")
+    print(f"  {'stratum':<14} {'n':>3} {'agree':>6} {'lenient':>8} {'harsh':>6} {'lean':>6}")
+    for s in strata:
+        print(f"  {s['stratum']:<14} {s['n']:>3} {s['agreement']:>6.2f} {s['lenient']:>8} {s['harsh']:>6} {s['lean']:>+6.2f}")
+    soft = [s["stratum"] for s in strata if s["lean"] > 0]
+    if soft:
+        print(f"\nThe judge is softer than the human on: {', '.join(soft)}. Cover these with another check.")
 
     if kappa < args.min_kappa:
         print(f"\nJudge agreement gate FAILED: kappa {kappa:.2f} < {args.min_kappa}", file=sys.stderr)

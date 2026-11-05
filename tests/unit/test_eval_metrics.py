@@ -84,3 +84,32 @@ def test_check_gates_reports_failures():
     failures = check_gates({"correctness": 0.8, "groundedness": 1.0},
                            {"correctness": 0.9, "groundedness": 0.95})
     assert failures == ["correctness: 0.8 < required 0.9"]
+
+
+def test_reviewer_labels_cover_the_gold_set_and_every_disagreement_is_adjudicated():
+    import json
+    from pathlib import Path
+    judge_dir = Path(__file__).resolve().parents[2] / "evals" / "judge"
+    gold = {json.loads(l)["id"]: json.loads(l)["human"]
+            for l in (judge_dir / "human_labels.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()}
+    rows = [json.loads(l) for l in (judge_dir / "reviewer_labels.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    rows = [r for r in rows if "id" in r]
+    assert {r["id"] for r in rows} == set(gold)
+    for r in rows:
+        assert {r["reviewer_a"], r["reviewer_b"]} <= {"grounded", "not_grounded", "ambiguous"}
+        if r["reviewer_a"] != r["reviewer_b"]:
+            adj = r["adjudication"]
+            assert adj["final"] == gold[r["id"]], r["id"]
+            assert adj["rule"].startswith("R") and adj["note"]
+        else:
+            assert r["reviewer_a"] == gold[r["id"]], f"{r['id']}: reviewers agreed but the gold label differs"
+
+
+def test_reviewer_agreement_is_reported():
+    from evals.judge.judge_agreement import reviewer_agreement
+    import json
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[2] / "evals" / "judge" / "human_labels.jsonl"
+    final = {json.loads(l)["id"]: json.loads(l)["human"] for l in path.read_text(encoding="utf-8").splitlines() if l.strip()}
+    result = reviewer_agreement(final)
+    assert 0 < result["kappa_a_b"] < 1 and result["disagreements"]

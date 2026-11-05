@@ -106,7 +106,7 @@ evals/
   run_evals.py           eval runner + quality gates → evals/results/report.md
   thresholds.json        gate thresholds
   metrics.py             correctness, groundedness, retrieval metrics
-  judge/                 judge-vs-human agreement, with lean per item type
+  judge/                 labelling rubric, two-reviewer labels, judge-vs-human agreement with lean per item type
   promptfoo/             Promptfoo config, Python provider and assertions
   deepeval/              DeepEval test suite
 examples/                runnable code for articles 02 and 03
@@ -128,6 +128,7 @@ articles/                the eight articles
 | Consistency (paraphrase and persona groups) | 0.75 | ≥ 0.75 |
 | Judge vs human agreement (Cohen's kappa, 24 labelled items) | 0.74 | ≥ 0.5 |
 | Judge lenient errors (passes a bad answer) | 0 | |
+| Reviewer-to-reviewer agreement (the human ceiling) | 0.67 | |
 
 The three failing cases are deliberate, documented learning material: they are investigated in [article 07](articles/07-investigating-failures.md).
 

@@ -96,6 +96,29 @@ Wider fairness work (stereotyping in generated text, unequal refusal rates, qual
 
 This is the step most teams skip. **An automated judge is a model, and models are wrong sometimes.** Whether your judge is a heuristic like the groundedness check or an LLM-as-judge, measure how often it agrees with humans before you let it block a release.
 
+### 7.0 First, agree on what "correct" means
+
+Before the judge question comes a harder one: **do your humans agree with each other?** If two careful reviewers disagree, the judge has no clear target. (A second newsletter reader made this point; it is the hardest part in practice.)
+
+This repo handles it in three steps:
+
+1. **A rubric with failing examples:** [`evals/judge/RUBRIC.md`](../evals/judge/RUBRIC.md) has ten rules (for example "a changed number fails, however small"; "omission is not a groundedness failure") and pass and fail examples for each item type. The failing examples do more work than the definitions.
+2. **Two independent reviewers:** [`reviewer_labels.jsonl`](../evals/judge/reviewer_labels.jsonl) holds both reviewers' raw labels, made without seeing each other's. (They are illustrative labels written for this lab. Replace them with your own reviewers'.)
+3. **Adjudication with a recorded rule:** every disagreement is resolved against the rubric, the deciding rule is written down, and the final label goes into `human_labels.jsonl`.
+
+```text
+Human ceiling (two independent reviewers, 24 items):
+  reviewer A vs B: kappa 0.67   A vs final: 0.92   B vs final: 0.75
+  h02: adjudicated grounded by R3: B read 'a month' as vaguer than '30 days'.
+  h19: adjudicated not_grounded by R6: A skimmed past the dropped 'not'.
+  h23: adjudicated not_grounded by R8: B accepted an answer that added platforms.
+  h24: adjudicated grounded by R4: B failed it for leaving out attachments.
+```
+
+Reviewer-to-reviewer agreement is the **ceiling** for any judge. A judge cannot meaningfully agree with humans more than they agree with each other. The script prints a warning here, because the judge's kappa against the final labels (0.74) is *higher* than the reviewers' 0.67. Adjudicated labels are cleaner than either reviewer, so some gain is expected. But the number-and-negation check in section 7.2 was written while looking at these very labels, so the honest reading is **probably overfitted**. The fix is to keep a held-out set of labels that nobody tunes the judge against.
+
+Notice too that the reviewers' disagreements fall in the same places as the judge's errors: approximations, negations, added claims and omissions. These are the genuinely hard item types, for people and machines alike.
+
 [`evals/judge/`](../evals/judge/) contains 24 human-labelled answers, each tagged with an **item type** (verbatim, paraphrase, numeric, negation, multi-fact, added claim, contradiction, unanswerable), and a script that compares the judge with the labels:
 
 ```bash

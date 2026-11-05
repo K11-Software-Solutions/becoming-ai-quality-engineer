@@ -1,0 +1,25 @@
+{"_note": "Illustrative raw labels from two independent reviewers, written for this learning lab (not from a real study). Replace them with your own reviewers' labels. Final adjudicated labels live in human_labels.jsonl."}
+{"id": "h01", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h02", "reviewer_a": "grounded", "reviewer_b": "not_grounded", "adjudication": {"final": "grounded", "rule": "R3", "note": "B read 'a month' as vaguer than '30 days'. Agreed it is exact in meaning; R3 example added to the rubric."}}
+{"id": "h03", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h04", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h05", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h06", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h07", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h08", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h09", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h10", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h11", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h12", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h13", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h14", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h15", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h16", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h17", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h18", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h19", "reviewer_a": "grounded", "reviewer_b": "not_grounded", "adjudication": {"final": "not_grounded", "rule": "R6", "note": "A skimmed past the dropped 'not'. Humans miss negation flips too; R6 now listed explicitly."}}
+{"id": "h20", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h21", "reviewer_a": "not_grounded", "reviewer_b": "not_grounded"}
+{"id": "h22", "reviewer_a": "grounded", "reviewer_b": "grounded"}
+{"id": "h23", "reviewer_a": "not_grounded", "reviewer_b": "grounded", "adjudication": {"final": "not_grounded", "rule": "R8", "note": "B accepted it because 'desktop apps work offline' is supported. The platform list is not, so R8 applies; example added to the rubric."}}
+{"id": "h24", "reviewer_a": "grounded", "reviewer_b": "not_grounded", "adjudication": {"final": "grounded", "rule": "R4", "note": "B failed it for leaving out attachments. Omission is completeness, not groundedness; R4 written down."}}

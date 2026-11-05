@@ -85,6 +85,31 @@ def stratified(rows: list[dict], predicted: list[str]) -> list[dict]:
     return out
 
 
+REVIEWERS = HERE / "reviewer_labels.jsonl"
+
+
+def reviewer_agreement(final: dict[str, str]) -> dict | None:
+    """Agreement between the two independent human reviewers, before adjudication.
+
+    This is the ceiling for any automated judge: if two careful people agree at
+    kappa 0.7, a judge "agreeing" at 0.9 is more likely overfitted to the labels
+    than better than the humans.
+    """
+    if not REVIEWERS.is_file():
+        return None
+    rows = [json.loads(line) for line in REVIEWERS.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [r for r in rows if "id" in r]
+    a = [r["reviewer_a"] for r in rows]
+    b = [r["reviewer_b"] for r in rows]
+    return {
+        "n": len(rows),
+        "kappa_a_b": round(cohen_kappa(a, b), 2),
+        "kappa_a_final": round(cohen_kappa(a, [final[r["id"]] for r in rows]), 2),
+        "kappa_b_final": round(cohen_kappa(b, [final[r["id"]] for r in rows]), 2),
+        "disagreements": [{"id": r["id"], **r["adjudication"]} for r in rows if r["reviewer_a"] != r["reviewer_b"]],
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--judge", choices=["heuristic", "overlap", "llm"], default="heuristic")
@@ -121,6 +146,18 @@ def main(argv: list[str] | None = None) -> int:
     soft = [s["stratum"] for s in strata if s["lean"] > 0]
     if soft:
         print(f"\nThe judge is softer than the human on: {', '.join(soft)}. Cover these with another check.")
+
+    reviewers = reviewer_agreement({r["id"]: r["human"] for r in rows})
+    if reviewers:
+        print(f"\nHuman ceiling (two independent reviewers, rubric in evals/judge/RUBRIC.md, {reviewers['n']} items):")
+        print(f"  reviewer A vs B: kappa {reviewers['kappa_a_b']:.2f}   "
+              f"A vs final: {reviewers['kappa_a_final']:.2f}   B vs final: {reviewers['kappa_b_final']:.2f}")
+        for d in reviewers["disagreements"]:
+            print(f"  {d['id']}: adjudicated {d['final']} by {d['rule']}: {d['note']}")
+        if kappa > reviewers["kappa_a_b"]:
+            print(f"  Note: the judge (kappa {kappa:.2f}) agrees with the final labels more than the reviewers agree with "
+                  "each other. Final labels are adjudicated, so some gain is expected, but also suspect overfitting: "
+                  "check the judge on labels it was not tuned on.")
 
     if kappa < args.min_kappa:
         print(f"\nJudge agreement gate FAILED: kappa {kappa:.2f} < {args.min_kappa}", file=sys.stderr)

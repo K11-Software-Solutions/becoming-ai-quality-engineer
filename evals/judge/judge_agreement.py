@@ -20,6 +20,7 @@ from pathlib import Path
 from app.config import Settings
 from app.llm import get_llm
 from evals import metrics
+from evals.versioning import describe, versions
 
 HERE = Path(__file__).parent
 LABELS = HERE / "human_labels.jsonl"
@@ -129,6 +130,8 @@ def main(argv: list[str] | None = None) -> int:
     kappa = cohen_kappa(human, predicted)
 
     print(f"Judge: {args.judge}   items: {len(rows)}")
+    label_files = [p for p in (LABELS, HERE / "reviewer_labels.jsonl", HERE / "RUBRIC.md") if p.is_file()]
+    print(f"labels: {describe(versions(*label_files))}")
     print(f"accuracy: {accuracy:.2f}   cohen_kappa: {kappa:.2f}")
     print(f"confusion (positive = grounded): TP={tp} TN={tn} FP={fp} FN={fn}")
     print("\nDisagreements:")

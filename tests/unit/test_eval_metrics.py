@@ -113,3 +113,22 @@ def test_reviewer_agreement_is_reported():
     final = {json.loads(l)["id"]: json.loads(l)["human"] for l in path.read_text(encoding="utf-8").splitlines() if l.strip()}
     result = reviewer_agreement(final)
     assert 0 < result["kappa_a_b"] < 1 and result["disagreements"]
+
+
+def test_fingerprint_ignores_line_endings_but_not_content(tmp_path):
+    from evals.versioning import fingerprint
+    lf, crlf, edited = tmp_path / "lf.jsonl", tmp_path / "crlf.jsonl", tmp_path / "edited.jsonl"
+    lf.write_bytes(b'{"id": "a", "human": "grounded"}\n')
+    crlf.write_bytes(b'{"id": "a", "human": "grounded"}\r\n')
+    edited.write_bytes(b'{"id": "a", "human": "not_grounded"}\n')
+    assert fingerprint(lf) == fingerprint(crlf)        # same data on Windows and Linux
+    assert fingerprint(lf) != fingerprint(edited)      # a quiet label flip changes the version
+
+
+def test_eval_report_records_dataset_versions(tmp_path):
+    import json
+    from evals.run_evals import main
+    main(["--no-gate", "--out", str(tmp_path)])
+    report = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
+    assert set(report["data_versions"]) == {"golden_qa.jsonl", "thresholds.json"}
+    assert "golden_qa.jsonl@" in (tmp_path / "report.md").read_text(encoding="utf-8")

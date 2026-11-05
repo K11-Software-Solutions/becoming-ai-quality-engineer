@@ -20,6 +20,7 @@ from statistics import mean
 
 from app.rag import RAGPipeline
 from evals import metrics
+from evals.versioning import describe, versions
 
 HERE = Path(__file__).parent
 DEFAULT_DATASET = HERE / "datasets" / "golden_qa.jsonl"
@@ -139,11 +140,14 @@ def check_gates(summary: dict, thresholds: dict) -> list[str]:
     return failures
 
 
-def to_markdown(summary: dict, results: list[dict], thresholds: dict, failures: list[str], model: str) -> str:
+def to_markdown(summary: dict, results: list[dict], thresholds: dict, failures: list[str], model: str,
+                data_versions: dict[str, str] | None = None) -> str:
     lines = [
         "# Evaluation report",
         "",
         f"Model: `{model}`  |  Cases: {summary['cases']}  |  Pass rate: {summary['pass_rate']:.0%}",
+        "",
+        f"Data: {describe(data_versions)}  (compare scores only when these match)" if data_versions else "",
         "",
         "| Metric | Value | Gate |",
         "|---|---|---|",
@@ -189,10 +193,11 @@ def main(argv: list[str] | None = None) -> int:
     failures = check_gates(summary, thresholds)
 
     args.out.mkdir(parents=True, exist_ok=True)
-    report = {"model": pipeline.llm.name, "summary": summary, "thresholds": thresholds,
-              "gate_failures": failures, "results": results}
+    data_versions = versions(args.dataset, args.thresholds)
+    report = {"model": pipeline.llm.name, "data_versions": data_versions, "summary": summary,
+              "thresholds": thresholds, "gate_failures": failures, "results": results}
     (args.out / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    md = to_markdown(summary, results, thresholds, failures, pipeline.llm.name)
+    md = to_markdown(summary, results, thresholds, failures, pipeline.llm.name, data_versions)
     (args.out / "report.md").write_text(md, encoding="utf-8")
 
     print(md)

@@ -205,4 +205,4 @@ Building it also turned up four genuine problems, each now covered by a test:
 *Thanks to the newsletter readers whose comments shaped sections 1, 5 and 7.*
 
 ---
-Back to the [index](../README.md#article-index).
+Next: [10. Using the Three Reports](10-using-the-three-reports.md) · Back to the [index](../README.md#article-index).

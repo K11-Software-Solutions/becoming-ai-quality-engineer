@@ -11,7 +11,7 @@ python -m evals.severity.run_severity                    # severity report (simu
 python -m evals.severity.run_severity --ratings my.jsonl # ... with real human ratings
 ```
 
-A sample report is in [`docs/sample-reports/severity-report.md`](../../docs/sample-reports/severity-report.md).
+A sample report is in [`docs/sample-reports/severity-report.md`](../../docs/sample-reports/severity-report.md). For a full explanation written for both non-statistical and statistical readers, see [article 09](../../articles/09-measuring-grader-severity.md).
 
 ## How it works
 

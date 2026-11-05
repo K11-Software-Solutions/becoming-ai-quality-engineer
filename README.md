@@ -44,6 +44,7 @@ About eight weeks at 5 to 8 hours a week. The week-by-week plan, with a delivera
 | 06 | [Roadmap and Hands-On Project](articles/06-roadmap-and-hands-on-project.md) | The 8-week plan, full setup, running the app, tests, evals and CI gates | [`app/`](app), [`.github/workflows`](.github/workflows) |
 | 07 | [Investigating Failures](articles/07-investigating-failures.md) | A triage loop with traces, and three real failures worked through | `TRACE_FILE`, `FAKE_LLM_BEHAVIOR` |
 | 08 | [Portfolio and Interview Prep](articles/08-portfolio-and-interview-prep.md) | Explaining architecture, test choices, results and limitations; common questions | |
+| 09 | [Measuring Grader Severity](articles/09-measuring-grader-severity.md) | Beyond agreement scores: how strict each grader is, by answer type, with error bars; sample sizes; written for both non-statistical and statistical readers | [`evals/severity`](evals/severity) |
 
 **Short on time?** Read [05 Tools by Purpose → Start here](articles/05-tools-by-purpose.md#start-here). You do not need to learn every tool.
 

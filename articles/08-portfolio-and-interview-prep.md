@@ -99,4 +99,4 @@ Prepare two or three stories from this project and your QA past:
 - [ ] A green CI badge
 
 ---
-Back to the [index](../README.md#article-index).
+Next: [09. Measuring Grader Severity](09-measuring-grader-severity.md) · Back to the [index](../README.md#article-index).

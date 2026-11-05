@@ -130,6 +130,8 @@ articles/                the eight articles
 | Judge lenient errors (passes a bad answer) | 0 | |
 | Reviewer-to-reviewer agreement (the human ceiling) | 0.67 | |
 
+Sample reports from CI are committed in [`docs/sample-reports/`](docs/sample-reports/): the [evaluation report](docs/sample-reports/eval-report.md) and the [judge validation report](docs/sample-reports/judge-report.md).
+
 The three failing cases are deliberate, documented learning material: they are investigated in [article 07](articles/07-investigating-failures.md).
 
 ### CI quality gates

@@ -131,7 +131,7 @@ Question: *"Can I get a refund for an App Store purchase?"* (high risk). Context
 
 1. **Calibrate.** Before labelling, both reviewers label and score the examples above and compare. Discuss every difference until you agree on the rule or the score.
 2. **Label independently.** Each reviewer labels Part A and scores Part B for the full set without seeing the other's work. Raw labels are kept in [`reviewer_labels.jsonl`](reviewer_labels.jsonl).
-3. **Measure reviewer-to-reviewer agreement.** Cohen's kappa for Part A; for Part B, weighted agreement on the 0–3 scores **and** agreement on pass/fail after applying the tier threshold. This is the ceiling for any automated judge. `python -m evals.judge.judge_agreement` reports Part A.
+3. **Measure reviewer-to-reviewer agreement.** Cohen's kappa for Part A; for Part B, weighted agreement on the 0–3 scores **and** agreement on pass/fail after applying the tier threshold. This is the ceiling for any automated judge. `python -m evals.judge.judge_agreement` reports both parts.
 4. **Adjudicate.** Part A: every disagreement. Part B: any pair of scores that differ by 2 or more, or that fall on opposite sides of the tier threshold. Record the rule that decided it and write the final label and score to `human_labels.jsonl`.
 5. **Update the rubric** whenever an adjudication needed a rule that wasn't written down. The disagreements are the rubric's test cases.
 6. **Change the rubric and the labels in their own commits**, separately from any grader change (CI enforces this). When a rule or threshold changes, find the labels it affects and re-adjudicate them.
@@ -140,5 +140,6 @@ Question: *"Can I get a refund for an App Store purchase?"* (high risk). Context
 
 ## Change log
 
+- **v2, scores collected (2026-11-06):** completeness scores for the 11 grounded answers added in [`completeness_labels.jsonl`](completeness_labels.jsonl), two adjudications (h02 by C5, h13 by C3). No rule changed.
 - **v2 (2026-11-06):** Part A unchanged; R4 now points to Part B. Added Part B (graded completeness with per-tier thresholds), C1–C5, examples, and graded-agreement and adjudication steps in the process. **Existing groundedness labels remain valid:** no Part A rule changed, so no re-adjudication is needed. Completeness scores have not been collected yet.
 - **v1:** groundedness rules R1–R10 with examples and the two-reviewer process.

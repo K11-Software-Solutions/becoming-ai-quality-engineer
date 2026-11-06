@@ -6,6 +6,7 @@ It is separate from the existing judge check. It does not change the judge, its 
 
 ```bash
 python -m evals.severity.power --detect 0.3 --info 0.1   # how many ratings do I need?
+python -m evals.severity.power --detect 0.3 0.5 0.75 --info 0.1 --alpha 0.10 --power 0.75   # your own trade-off
 python -m evals.severity.generate_items                  # regenerate items.jsonl (deterministic)
 python -m evals.severity.run_severity                    # severity report (simulated reviewers)
 python -m evals.severity.run_severity --ratings my.jsonl # ... with real human ratings

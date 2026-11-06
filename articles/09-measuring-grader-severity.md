@@ -144,6 +144,16 @@ How many ratings do you need? Work it out **before** you start labelling:
 
 To reliably detect a lean of 0.3 logits (a modest one), you need **roughly 1,700 ratings per answer type** with ratings like these. In the best case (answers that are genuinely 50/50 for the grader) the number falls to about 700. A study sized by gut feeling, at a few dozen items, cannot see leans of this size at all.
 
+**The hardest choice is the effect size, and it is a business decision.** Power depends on four things: how often you accept a false alarm (alpha), how often you want to catch a lean that is really there (power), the smallest lean that would change what you do (the effect size), and the number of ratings. The statistics cannot choose the effect size for you. If your process can live with more uncertainty, the study gets much smaller:
+
+| Smallest lean worth detecting | Pass/fail ratings (information 0.10) | Graded 0–3 ratings (information 0.29) |
+|---|---|---|
+| 0.3 logits | about 1,740 | about 600 |
+| 0.5 logits | about 630 | about 220 |
+| 0.75 logits | about 280 | about 100 |
+
+(5% false alarms, 80% power, per answer type.) Near a 50% pass rate, a lean of 0.5 logits is roughly a 12-point change in how often the grader passes answers, often the smallest difference a team would act on. So the practical order is: **agree the smallest lean that would change a decision, then size the study.** Accepting 10% false alarms and 75% power cuts the 0.5-logit pass/fail figure from about 630 to about 430.
+
 **For the statistically minded.** For dichotomous Rasch ratings, the information a rating contributes to ρ is p(1 − p), at most 0.25. Hence
 
 ```text
@@ -156,7 +166,7 @@ where ī is the mean information per rating. The judge's ratings in the sample h
 d  ≥  (1.96 + 0.84) · √2 · SE    ⇒    n  =  1 / ( ī · (d / (2.80 · √2))² )
 ```
 
-For d = 0.3 and ī = 0.10 this gives n ≈ 1,700; for ī = 0.25, n ≈ 700. `python -m evals.severity.power --detect 0.3 --info 0.1` computes it.
+For d = 0.3 and ī = 0.10 this gives n ≈ 1,700; for ī = 0.25, n ≈ 700. `python -m evals.severity.power --detect 0.3 --info 0.1` computes it. To set your own trade-off, pass several effect sizes and your own error rates: `python -m evals.severity.power --detect 0.3 0.5 0.75 --info 0.1 --alpha 0.10 --power 0.75`. The z-values come from the normal distribution, rounded to two decimals as in standard tables (1.96 and 0.84 by default).
 
 ### 7.1 Graded ratings: fewer ratings for the same precision
 
@@ -206,7 +216,7 @@ Building it also turned up four genuine problems, each now covered by a test:
 ## 9. Using it with real people
 
 1. **Agree on the rubric first** ([`evals/judge/RUBRIC.md`](../evals/judge/RUBRIC.md)); disagreement about what "correct" means swamps everything else.
-2. **Size the study** with the power calculation, at a realistic information level, not the best case.
+2. **Agree the effect size, then size the study**: decide the smallest lean that would change a decision, then run the power calculation at a realistic information level (not the best case), with the false-alarm rate and power your process can tolerate.
 3. **Use a linked design:** shared anchor answers for everyone, individual samples on top.
 4. **Mix in real model answers**, not only constructed ones.
 5. **Record ratings** one per line, `{"item_id": "s-nume-001", "rater": "reviewer-1", "grounded": 0}`, and run `python -m evals.severity.run_severity --ratings my.jsonl`.

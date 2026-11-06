@@ -1,0 +1,12 @@
+{"_note": "Completeness scores (rubric v2, Part B) for the answers labelled grounded in human_labels.jsonl. Illustrative reviewer scores written for this learning lab, not from a real study; replace them with your own reviewers' scores. Scale 0-3; pass at 3 for high-risk topics and at 2 or above for standard topics. 'final' is adjudicated where the scores differ by 2 or more or fall on opposite sides of the threshold; otherwise it is the lower score (rule C5)."}
+{"id": "h01", "question": "How long do I have to get a full refund?", "tier": "high", "reviewer_a": 3, "reviewer_b": 3, "final": 3}
+{"id": "h02", "question": "How long do I have to get a full refund?", "tier": "high", "reviewer_a": 3, "reviewer_b": 2, "final": 2, "adjudication": {"rule": "C5", "note": "Straddles the high-risk threshold. A read 'money back' as a full refund; B noted that 'full' and 'any paid plan' are dropped. Unsure between 2 and 3, so the lower score applies: fails the high-risk bar."}}
+{"id": "h06", "question": "How long are password reset links valid?", "tier": "high", "reviewer_a": 3, "reviewer_b": 3, "final": 3}
+{"id": "h07", "question": "What happens after 5 failed sign-in attempts?", "tier": "high", "reviewer_a": 3, "reviewer_b": 3, "final": 3}
+{"id": "h09", "question": "What format are note exports in?", "tier": "standard", "reviewer_a": 3, "reviewer_b": 3, "final": 3}
+{"id": "h11", "question": "What is the API rate limit for Pro accounts?", "tier": "standard", "reviewer_a": 3, "reviewer_b": 3, "final": 3}
+{"id": "h13", "question": "Can I edit notes offline in the web app?", "tier": "standard", "reviewer_a": 3, "reviewer_b": 1, "final": 2, "adjudication": {"rule": "C3", "note": "Scores differ by 2. B treated 'requires an internet connection' as a required condition. The answer already says offline editing is not supported, which is what the user asked; the connection requirement is a secondary detail. Passes the standard bar."}}
+{"id": "h15", "question": "Do students get a discount on Pro?", "tier": "high", "reviewer_a": 3, "reviewer_b": 3, "final": 3}
+{"id": "h20", "question": "Can I use SMS codes for two-factor authentication?", "tier": "high", "reviewer_a": 2, "reviewer_b": 1, "final": 1}
+{"id": "h22", "question": "How much does the Pro plan cost and how much storage does it include?", "tier": "high", "reviewer_a": 2, "reviewer_b": 1, "final": 1}
+{"id": "h24", "question": "What format are note exports in?", "tier": "standard", "reviewer_a": 2, "reviewer_b": 2, "final": 2}

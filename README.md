@@ -9,6 +9,18 @@ A free, hands-on learning path for **QA engineers and SDETs moving into AI quali
 
 **Everything runs offline, without a paid API key.** A deterministic fake model makes tests and CI repeatable; switch one environment variable to use OpenAI or Anthropic.
 
+## The series
+
+This is the first of five labs in a series for quality engineers moving into AI:
+
+| Lab | Question it answers |
+|---|---|
+| **Becoming an AI Quality Engineer** (this repo) | Is the RAG **application** good enough to ship? |
+| [LLM Model Testing Lab](https://github.com/K11-Software-Solutions/llm-model-testing-lab) | Is the **model** good enough? |
+| [Agent Testing Lab](https://github.com/K11-Software-Solutions/agent-testing-lab) | Is the **agent** safe to let act? |
+| [AI Production Monitoring Lab](https://github.com/K11-Software-Solutions/ai-production-monitoring-lab) | Is it **still** good, for the users we actually have, right now? |
+| [Multi-Agent Testing Lab](https://github.com/K11-Software-Solutions/multi-agent-testing-lab) | When **agents work together**, does the team do the right thing, and who broke it when it doesn't? |
+
 ## Who this is for
 
 - Manual or automation testers who want to test LLM features with confidence

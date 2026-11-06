@@ -96,6 +96,10 @@ jobs:
         run: |
           python -m evals.severity.run_severity > /dev/null
           cat evals/results/severity_report.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Graded severity report (informational, simulated reviewers)
+        run: |
+          python -m evals.severity.run_graded > /dev/null
+          cat evals/results/graded_severity_report.md >> "$GITHUB_STEP_SUMMARY"
       - name: DeepEval suite
         run: pytest evals/deepeval -v
       - name: Gate sanity check (a hallucinating model MUST fail the gate)

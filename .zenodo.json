@@ -1,0 +1,24 @@
+{
+  "title": "Becoming an AI Quality Engineer: Skills, Tools, and a Practical Learning Roadmap",
+  "description": "Becoming an AI Quality Engineer: Skills, Tools, and a Practical Learning Roadmap. Articles + a runnable RAG project with pytest, Playwright, Promptfoo, DeepEval and CI quality gates (no API key needed).",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Jadhav, Kavita",
+      "affiliation": "K11 Software Solutions"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "ai-quality-engineering",
+    "deepeval",
+    "learning-roadmap",
+    "llm-evaluation",
+    "playwright",
+    "promptfoo",
+    "pytest",
+    "qa",
+    "rag"
+  ],
+  "notes": "Code is licensed under MIT; the written material (articles/, docs/) is licensed under CC BY 4.0. All products, users and data in the examples are fictional or simulated."
+}

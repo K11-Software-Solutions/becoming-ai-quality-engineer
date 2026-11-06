@@ -89,7 +89,7 @@ Human ceiling (two independent reviewers):
 - **The per-type table.** A positive lean on a type means the grader is softer than people there, so report 1's score for that kind of answer is optimistic.
 - **The human ceiling.** Two careful reviewers agreed at kappa 0.67. A grader cannot meaningfully beat that. When it does (here 0.74), suspect that it was tuned on these labels, and check it on labels it has never seen.
 - **The `labels:` line.** Fingerprints of the labels and rubric. If they changed, re-run and compare, but never change labels and the grader in the same commit.
-- **The completeness section** (rubric v2, Part B). For 0–3 scores there are two numbers to read. *Weighted kappa* asks whether the grader ranks answers like the reviewers; *same pass/fail* asks whether it makes the same decision once the tier's pass mark is applied. They can disagree: here weighted kappa is 0.68, yet the grader gets only half of the standard-tier decisions right, because it is harsh on short paraphrases. The decision is what ships, so read the per-tier pass/fail line and the false passes first.
+- **The completeness section** (rubric v2, Part B). For 0–3 scores there are two numbers to read. *Weighted kappa* asks whether the grader ranks answers like the reviewers; *same pass/fail* asks whether it makes the same decision once the tier's pass mark is applied. They can disagree: the first version of the grader had weighted kappa 0.68 yet got only half of the standard-tier decisions right, because it was harsh on short paraphrases (fixed since; see article 04, section 7.3). The decision is what ships, so read the per-tier pass/fail line and the false passes first.
 
 ### What it cannot tell you
 

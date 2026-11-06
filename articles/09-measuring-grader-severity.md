@@ -166,13 +166,13 @@ To check what grading buys, the report takes the **same** ratings, cuts them to 
 
 | | Graded (0–3) | Same ratings as pass/fail |
 |---|---|---|
-| Information per rating | 0.29 | 0.05 |
-| Ratings to detect a 0.3-logit lean | about 600 | about 3,200 |
-| Clearest verdict (omission answers, z = lean / SE) | −4.7 | −3.4 |
+| Information per rating | 0.29 | 0.04 |
+| Ratings to detect a 0.3-logit lean | about 600 | about 4,000 |
+| Verdict on paraphrased answers (z = lean / SE) | −3.3, softer | −1.7, can't tell |
 
 Three honest qualifications:
 
-1. **It is not better everywhere.** On paraphrased answers the pass/fail version gave a slightly clearer verdict (z −3.0 against −2.6). Grading wins overall, not in every cell.
+1. **It is not better everywhere.** On answers with omissions the two versions are about equally clear (z −3.5 graded, −3.6 pass/fail), and overall the pass/fail z is no smaller. Grading wins where answers sit near the top of the scale, as paraphrases do: pass/fail sees only "passed", while the 0–3 score still separates a 2 from a 3.
 2. **The size of the gain depends on where the bar sits.** Most of these answers clear the bar easily, so a pass/fail rating rarely surprises anyone and carries little information. With a bar near the middle of the answers, the gap is smaller.
 3. **It only helps if reviewers use the scale the same way.** If two people cannot agree whether an answer is a 2 or a 3, the extra detail is noise. Check reviewer-to-reviewer weighted kappa first; on the 11 labelled answers in this repo it is 0.45, which is moderate.
 
@@ -184,7 +184,7 @@ The result itself is worth reading too: the completeness grader is **softer than
 log [ P(X = k) / P(X = k − 1) ]  =  β_i − ρ_r − τ_k ,    k = 1, 2, 3,   Σ τ_k = 0
 ```
 
-with thresholds τ shared by all raters, using the same estimation choices as the binary model (reference-only calibration, hierarchical item prior per stratum, damped Newton, re-anchoring). The information one rating carries about ρ is the model variance of the score, Var(X | β_i − ρ_r), which for four categories can exceed the binary maximum of 0.25 (here 0.29 on average, against 0.054 for the same ratings dichotomised). The two models put severity on different logit scales, so compare z = lean / SE rather than raw logits; the ratings-needed figures use each model's own information and are a planning guide, not an exact exchange rate. Thresholds are recovered approximately (estimated −1.71, +0.32, +1.39 against true −1.2, 0, +1.2) and reviewer severities within two SE.
+with thresholds τ shared by all raters, using the same estimation choices as the binary model (reference-only calibration, hierarchical item prior per stratum, damped Newton, re-anchoring). The information one rating carries about ρ is the model variance of the score, Var(X | β_i − ρ_r), which for four categories can exceed the binary maximum of 0.25 (here 0.29 on average, against 0.044 for the same ratings dichotomised). The two models put severity on different logit scales, so compare z = lean / SE rather than raw logits; the ratings-needed figures use each model's own information and are a planning guide, not an exact exchange rate. Thresholds are recovered approximately (estimated −1.71, +0.32, +1.39 against true −1.2, 0, +1.2) and reviewer severities within two SE.
 
 ---
 

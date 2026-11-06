@@ -1,7 +1,7 @@
 # Becoming an AI Quality Engineer: Skills, Tools, and a Practical Learning Roadmap
 
 [![CI quality gates](https://github.com/K11-Software-Solutions/becoming-ai-quality-engineer/actions/workflows/ci.yml/badge.svg)](https://github.com/K11-Software-Solutions/becoming-ai-quality-engineer/actions/workflows/ci.yml)
-[![Code: MIT](https://img.shields.io/badge/Code-MIT-blue.svg)](LICENSE) [![Articles: CC BY 4.0](https://img.shields.io/badge/Articles-CC%20BY%204.0-lightgrey.svg)](articles/LICENSE.md)
+[![Code: MIT](https://img.shields.io/badge/Code-MIT-blue.svg)](LICENSE) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24015019.svg)](https://doi.org/10.5281/zenodo.24015019) [![Articles: CC BY 4.0](https://img.shields.io/badge/Articles-CC%20BY%204.0-lightgrey.svg)](articles/LICENSE.md)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 ![No API key needed](https://img.shields.io/badge/API%20key-not%20required-success)
 
@@ -159,4 +159,8 @@ NimbusNotes is a fictional product invented for this project.
 
 ## Citing
 
-Use GitHub's **Cite this repository** button (from [`CITATION.cff`](CITATION.cff)). Each tagged release is archived on Zenodo with its own DOI; cite the version you used, or the concept DOI for the project as a whole. The DOI badge will appear here after the first release.
+Use GitHub's **Cite this repository** button (from [`CITATION.cff`](CITATION.cff)). Each tagged release is archived on Zenodo with its own DOI. Cite the version you used:
+
+> Jadhav, K. (2026). *Becoming an AI Quality Engineer: Skills, Tools, and a Practical Learning Roadmap* (Version v1.0.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24015020
+
+To refer to the project as a whole (always resolves to the latest version), use the concept DOI: https://doi.org/10.5281/zenodo.24015019

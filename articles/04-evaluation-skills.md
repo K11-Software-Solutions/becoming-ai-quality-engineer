@@ -189,6 +189,7 @@ How to choose thresholds:
 - **Use 100% gates only for must-never-happen behaviours** such as injection resistance and forbidden content.
 - **Test the gate.** CI runs the suite against a hallucinating model and fails if the gate does not catch it.
 - **Version the data with the results.** Datasets and labels live in git, so every change is reviewed in a diff, and every report records a short fingerprint of each file it used (`Data: golden_qa.jsonl@a81ad2cd531c, ...`). Compare two scores only when the fingerprints match, and review label changes separately from judge or model changes, so nobody tunes a judge to its own test set by accident.
+- **Enforce the separation in CI.** The `change-hygiene` job ([`evals/change_hygiene.py`](../evals/change_hygiene.py)) fails any new commit that changes the human labels or the rubric *and* the grader code together. A deliberate exception needs `[labels+grader]` in the commit message and is reported as a warning. Run over this repo's own history, the check flags two earlier commits, made before the rule existed: the commit that added the number-and-negation check alongside new labels (section 7.2), and the commit that added the rubric alongside changes to the judge script. It is exactly the kind of change the rule is meant to make visible. (A newsletter reader suggested versioning labels together with the rubric while reviewing changes to each separately; the fingerprints and this check implement both.)
 
 Baseline for this repo with the fake model:
 

@@ -45,6 +45,34 @@ jobs:
           name: test-reports
           path: reports/
 
+  change-hygiene:
+    name: Labels and grader change in separate commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check every new commit
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT" = "pull_request" ]; then
+            RANGE="$PR_BASE..$PR_HEAD"
+          elif [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            RANGE="$BEFORE..$SHA"
+          else
+            RANGE="$SHA~1..$SHA"
+          fi
+          echo "Checking $RANGE"
+          python -m evals.change_hygiene --range "$RANGE"
+
   ai-evals:
     name: AI evals (golden set, judge check, DeepEval)
     runs-on: ubuntu-latest

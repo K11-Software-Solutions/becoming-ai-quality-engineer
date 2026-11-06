@@ -191,5 +191,7 @@ No single report would have led there. Report 1 said "fine", report 2 said "fine
 - **Fingerprints make comparisons honest.** Compare scores only when the data and labels are the same.
 - **"Inconclusive" is a result.** It tells you to gather more evidence, and the power analysis tells you how much.
 
+Next: [11. Pass/Fail or Graded? Building and Validating a Completeness Grader](11-grading-completeness.md).
+
 ---
 Back to the [index](../README.md#article-index).

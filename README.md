@@ -46,6 +46,7 @@ About eight weeks at 5 to 8 hours a week. The week-by-week plan, with a delivera
 | 08 | [Portfolio and Interview Prep](articles/08-portfolio-and-interview-prep.md) | Explaining architecture, test choices, results and limitations; common questions | |
 | 09 | [Measuring Grader Severity](articles/09-measuring-grader-severity.md) | Beyond agreement scores: how strict each grader is, by answer type, with error bars; sample sizes; written for both non-statistical and statistical readers | [`evals/severity`](evals/severity) |
 | 10 | [Using the Three Reports](articles/10-using-the-three-reports.md) | Evaluation, judge validation and severity reports: what each answers, how to read it, which to use when, and a worked example | [`docs/sample-reports`](docs/sample-reports) |
+| 11 | [Pass/Fail or Graded?](articles/11-grading-completeness.md) | Building and validating a completeness grader: graded scores with risk-tier pass marks, two agreement numbers, diagnosing and fixing a harsh grader, and what grading buys for severity | [`evals/completeness.py`](evals/completeness.py), [`evals/judge`](evals/judge) |
 
 **Short on time?** Read [05 Tools by Purpose → Start here](articles/05-tools-by-purpose.md#start-here). You do not need to learn every tool.
 

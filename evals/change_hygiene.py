@@ -22,10 +22,12 @@ LABEL_FILES = {
     "evals/judge/human_labels.jsonl",
     "evals/judge/reviewer_labels.jsonl",
     "evals/judge/RUBRIC.md",
+    "evals/judge/completeness_labels.jsonl",
 }
 GRADER_FILES = {
     "evals/metrics.py",                 # groundedness and fact checks used by the judge and the eval gate
     "evals/judge/judge_agreement.py",   # the judge functions themselves
+    "evals/completeness.py",            # the completeness grader (rubric v2, Part B)
 }
 OVERRIDE = "[labels+grader]"
 

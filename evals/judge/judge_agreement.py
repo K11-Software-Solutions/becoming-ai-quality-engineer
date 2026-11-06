@@ -19,7 +19,7 @@ from pathlib import Path
 
 from app.config import Settings
 from app.llm import get_llm
-from evals import metrics
+from evals import completeness, metrics
 from evals.versioning import describe, versions
 
 HERE = Path(__file__).parent
@@ -111,6 +111,66 @@ def reviewer_agreement(final: dict[str, str]) -> dict | None:
     }
 
 
+COMPLETENESS = HERE / "completeness_labels.jsonl"
+
+
+def weighted_kappa(a: list[int], b: list[int], categories: int = 4) -> float:
+    """Quadratic-weighted kappa for ordinal scores: a 3-vs-2 disagreement costs far less than 3-vs-0."""
+    n = len(a)
+    if n == 0:
+        return 1.0
+    w = [[(i - j) ** 2 / (categories - 1) ** 2 for j in range(categories)] for i in range(categories)]
+    pa = [a.count(k) / n for k in range(categories)]
+    pb = [b.count(k) / n for k in range(categories)]
+    observed = sum(w[x][y] for x, y in zip(a, b)) / n
+    expected = sum(w[i][j] * pa[i] * pb[j] for i in range(categories) for j in range(categories))
+    return 1.0 if expected == 0 else 1 - observed / expected
+
+
+def completeness_agreement(labels: list[dict]) -> dict | None:
+    """Rubric v2, Part B: graded agreement on 0-3 scores and agreement on pass/fail after the tier threshold.
+
+    Two numbers, because they answer different questions. Weighted kappa: does the
+    grader rank answers like the reviewers? Pass/fail after the threshold: does it
+    make the same release decision? A grader can be one point off everywhere and
+    still decide right, or close on average and wrong exactly at the threshold.
+    """
+    if not COMPLETENESS.is_file():
+        return None
+    answers = {r["id"]: r for r in labels}
+    rows = [json.loads(line) for line in COMPLETENESS.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [dict(r) for r in rows if "id" in r]
+    for r in rows:
+        r["judge"] = completeness.score(answers[r["id"]]["answer"], r["question"], answers[r["id"]]["context"])
+
+    def decisions(key: str) -> list[str]:
+        return ["pass" if completeness.passes(r[key], r["tier"]) else "fail" for r in rows]
+
+    a, b, final, judge = ([r[k] for r in rows] for k in ("reviewer_a", "reviewer_b", "final", "judge"))
+    n = len(rows)
+    by_tier = []
+    for tier in sorted({r["tier"] for r in rows}):
+        idx = [i for i, r in enumerate(rows) if r["tier"] == tier]
+        jd, fd = decisions("judge"), decisions("final")
+        by_tier.append({"tier": tier, "n": len(idx), "pass_mark": completeness.THRESHOLDS[tier],
+                        "agreement": round(sum(jd[i] == fd[i] for i in idx) / len(idx), 2),
+                        "lean": round(sum(judge[i] - final[i] for i in idx) / len(idx), 2)})
+    return {
+        "n": n, "rows": rows, "by_tier": by_tier,
+        "reviewers_weighted_kappa": round(weighted_kappa(a, b), 2),
+        "reviewers_exact": round(sum(x == y for x, y in zip(a, b)) / n, 2),
+        "reviewers_passfail_agreement": round(sum(x == y for x, y in zip(decisions("reviewer_a"), decisions("reviewer_b"))) / n, 2),
+        "judge_weighted_kappa": round(weighted_kappa(judge, final), 2),
+        "judge_exact": round(sum(x == y for x, y in zip(judge, final)) / n, 2),
+        "judge_passfail_agreement": round(sum(x == y for x, y in zip(decisions("judge"), decisions("final"))) / n, 2),
+        "judge_lean": round(sum(j - f for j, f in zip(judge, final)) / n, 2),   # > 0 lenient, < 0 harsh
+        "false_passes": [r["id"] for r in rows
+                         if completeness.passes(r["judge"], r["tier"]) and not completeness.passes(r["final"], r["tier"])],
+        "false_fails": [r["id"] for r in rows
+                        if not completeness.passes(r["judge"], r["tier"]) and completeness.passes(r["final"], r["tier"])],
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--judge", choices=["heuristic", "overlap", "llm"], default="heuristic")
@@ -130,7 +190,7 @@ def main(argv: list[str] | None = None) -> int:
     kappa = cohen_kappa(human, predicted)
 
     print(f"Judge: {args.judge}   items: {len(rows)}")
-    label_files = [p for p in (LABELS, HERE / "reviewer_labels.jsonl", HERE / "RUBRIC.md") if p.is_file()]
+    label_files = [p for p in (LABELS, REVIEWERS, COMPLETENESS, HERE / "RUBRIC.md") if p.is_file()]
     print(f"labels: {describe(versions(*label_files))}")
     print(f"accuracy: {accuracy:.2f}   cohen_kappa: {kappa:.2f}")
     print(f"confusion (positive = grounded): TP={tp} TN={tn} FP={fp} FN={fn}")
@@ -161,6 +221,23 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  Note: the judge (kappa {kappa:.2f}) agrees with the final labels more than the reviewers agree with "
                   "each other. Final labels are adjudicated, so some gain is expected, but also suspect overfitting: "
                   "check the judge on labels it was not tuned on.")
+
+    comp = completeness_agreement(rows)
+    if comp:
+        print(f"\nCompleteness (rubric v2 Part B: 0-3, pass at 3 for high-risk topics, 2+ for standard; "
+              f"{comp['n']} grounded answers):")
+        print(f"  reviewers A vs B: weighted kappa {comp['reviewers_weighted_kappa']:.2f}   exact {comp['reviewers_exact']:.2f}   "
+              f"same pass/fail {comp['reviewers_passfail_agreement']:.2f}")
+        print(f"  grader vs final:  weighted kappa {comp['judge_weighted_kappa']:.2f}   exact {comp['judge_exact']:.2f}   "
+              f"same pass/fail {comp['judge_passfail_agreement']:.2f}   mean lean {comp['judge_lean']:+.2f} (< 0: harsher)")
+        for t in comp["by_tier"]:
+            print(f"    {t['tier']:<9} n={t['n']:<3} pass at {t['pass_mark']}   same pass/fail {t['agreement']:.2f}   lean {t['lean']:+.2f}")
+        print(f"  false passes: {', '.join(comp['false_passes']) or 'none'}   "
+              f"false fails: {', '.join(comp['false_fails']) or 'none'}")
+        for r in comp["rows"]:
+            if r["judge"] != r["final"]:
+                print(f"  {r['id']} ({r['tier']}): final {r['final']}, grader {r['judge']}: {r['question']}")
+        print("  Informational, not a gate: too few items to gate on (see article 09 on sample sizes).")
 
     if kappa < args.min_kappa:
         print(f"\nJudge agreement gate FAILED: kappa {kappa:.2f} < {args.min_kappa}", file=sys.stderr)

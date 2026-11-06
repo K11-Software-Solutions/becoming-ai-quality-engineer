@@ -89,6 +89,7 @@ Human ceiling (two independent reviewers):
 - **The per-type table.** A positive lean on a type means the grader is softer than people there, so report 1's score for that kind of answer is optimistic.
 - **The human ceiling.** Two careful reviewers agreed at kappa 0.67. A grader cannot meaningfully beat that. When it does (here 0.74), suspect that it was tuned on these labels, and check it on labels it has never seen.
 - **The `labels:` line.** Fingerprints of the labels and rubric. If they changed, re-run and compare, but never change labels and the grader in the same commit.
+- **The completeness section** (rubric v2, Part B). For 0–3 scores there are two numbers to read. *Weighted kappa* asks whether the grader ranks answers like the reviewers; *same pass/fail* asks whether it makes the same decision once the tier's pass mark is applied. They can disagree: here weighted kappa is 0.68, yet the grader gets only half of the standard-tier decisions right, because it is harsh on short paraphrases. The decision is what ships, so read the per-tier pass/fail line and the false passes first.
 
 ### What it cannot tell you
 
@@ -145,6 +146,8 @@ It compares graders with each other, not with the truth. That is why the accurac
 - find leans that agreement hides (here: stricter on correct answers that begin with "Yes.", softer on swapped plan names or units);
 - choose what to fix in the grader next, and confirm that a fix removed a lean rather than moving it;
 - size a human labelling round before you spend anyone's time.
+
+For graded scores, `python -m evals.severity.run_graded` gives the same report on 0–3 completeness ratings ([sample](../docs/sample-reports/graded-severity-report.md)), next to the same ratings cut to pass/fail. Graded ratings carry several times the information, so they shrink the labelling round, provided reviewers agree on the scale.
 
 ---
 

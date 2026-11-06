@@ -9,6 +9,7 @@ python -m evals.severity.power --detect 0.3 --info 0.1   # how many ratings do I
 python -m evals.severity.generate_items                  # regenerate items.jsonl (deterministic)
 python -m evals.severity.run_severity                    # severity report (simulated reviewers)
 python -m evals.severity.run_severity --ratings my.jsonl # ... with real human ratings
+python -m evals.severity.run_graded                      # graded (0-3) completeness severity, vs pass/fail
 ```
 
 A sample report is in [`docs/sample-reports/severity-report.md`](../../docs/sample-reports/severity-report.md). For a full explanation written for both non-statistical and statistical readers, see [article 09](../../articles/09-measuring-grader-severity.md).
@@ -19,6 +20,10 @@ A sample report is in [`docs/sample-reports/severity-report.md`](../../docs/samp
 2. **A linked rating design** ([`raters.py`](raters.py)). The judge rates every item. Reviewers rate a shared set of anchor items plus their own sample, so everyone sits on one scale without everyone rating everything.
 3. **A many-facet Rasch model** ([`mfrm.py`](mfrm.py)): `logit P(grounded) = ease(item) − severity(rater)`. Item ease is **calibrated on the reference raters only**, with a hierarchical prior per item type, so the judge's own errors cannot leak into item ease and hide its lean. The judge is then measured against those fixed item eases, overall and per item type.
 4. **A verdict that can say "inconclusive"** ([`run_severity.py`](run_severity.py)). Each per-type lean has a standard error; the report says *harsher* or *softer* only when the 95% interval excludes zero.
+
+## Graded ratings
+
+[`rsm.py`](rsm.py) is the graded counterpart of `mfrm.py`: a rating scale Rasch model for the 0–3 completeness scores of rubric v2 (Part B). [`run_graded.py`](run_graded.py) uses the grounded item types (verbatim, omission, paraphrase), simulated graded reviewers, and the real completeness grader ([`evals/completeness.py`](../completeness.py)) as the automated rater. It also cuts the same ratings to pass/fail and fits the binary model, so the report shows what grading buys: more information per rating and fewer ratings for the same precision ([sample](../../docs/sample-reports/graded-severity-report.md); [article 09, section 7.1](../../articles/09-measuring-grader-severity.md)). Real graded ratings: `{"item_id": "s-para-001", "rater": "reviewer-1", "score": 2}`, then `--ratings my.jsonl`.
 
 ## Important limits
 

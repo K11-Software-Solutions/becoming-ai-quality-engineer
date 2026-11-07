@@ -11,7 +11,7 @@ A free, hands-on learning path for **QA engineers and SDETs moving into AI quali
 
 ## The series
 
-This is the first of eight labs in a series for quality engineers moving into AI:
+This is the first of ten labs in a series for quality engineers moving into AI:
 
 | Lab | Question it answers |
 |---|---|
@@ -23,6 +23,8 @@ This is the first of eight labs in a series for quality engineers moving into AI
 | [AI Performance and Cost Lab](https://github.com/K11-Software-Solutions/ai-performance-cost-lab) | Is it **fast enough under load**, and what does each **good answer** cost? |
 | [AI Evaluation Science Lab](https://github.com/K11-Software-Solutions/ai-evaluation-science-lab) | Can we **trust the evaluator**, and how sure are we? |
 | [AI Data Quality Lab](https://github.com/K11-Software-Solutions/ai-data-quality-lab) | Is the **data** behind it all fit to learn from, test with and retrieve? |
+| [AI Security Testing Lab](https://github.com/K11-Software-Solutions/ai-security-testing-lab) | Can an **attacker** make it misbehave, and how sure are we that they can't? |
+| [MCP Testing Lab](https://github.com/K11-Software-Solutions/mcp-testing-lab) | Can we trust the **tools our agents plug into**? |
 
 ## Who this is for
 
